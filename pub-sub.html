@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Publish Subscribe Tutorial</title>
+</head>
+
+<body>
+    <input id="publish-button" type="submit" value="PubNub Publish..." />
+</body>
+
+<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.21.6.min.js"></script>
+<script>
+    const pubnub = new PubNub({
+        publishKey: 'pub-c-2a81792f-aff1-4455-88da-a98ccf6014bd',
+        subscribeKey: 'sub-c-fa73c607-7914-4480-9aef-be4a374a6b1b'
+    });
+
+    const button = document.getElementById('publish-button');
+    button.addEventListener('click', () => {
+        pubnub.publish({
+            channel: 'time-publish-example-channel',
+            message: {
+                mytime: 'My time is: ' + new Date().toString()
+            }
+        }, function (status, response) {
+            // Handle error here
+            console.log('publishing response: ', status, response)
+        })
+    });
+
+    pubnub.subscribe({
+        channels: ['time-publish-example-channel']
+    });
+
+    pubnub.addListener({
+        message: function (event) {
+            let pElement = document.createElement('p');
+            pElement.appendChild(document.createTextNode(event.message.mytime));
+            document.body.appendChild(pElement);
+        }
+    });
+</script>
+
+</html>
